@@ -166,7 +166,7 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
               })
             );
 
-            test.failing(
+            test(
               'With nested connect',
               runner(setupKeystone, async ({ keystone }) => {
                 const { companies } = await createInitialData(keystone);
@@ -179,7 +179,7 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
                 mutation {
                   createCompany(data: {
                     location: { create: { name: "${locationName}" company: { connect: { id: "${company.id}" } } } }
-                  }) { id location { id company { id }} }
+                  }) { id location { id company { id } } }
                 }
             `,
                 });
@@ -198,7 +198,7 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
                   data: { allCompanies },
                 } = await graphqlRequest({
                   keystone,
-                  query: `{ allCompanies { id location { id company { id }} } }`,
+                  query: `{ allCompanies { id location { id company { id } } } }`,
                 });
 
                 // The nested company should not have a location
@@ -213,7 +213,7 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
               })
             );
 
-            test.failing(
+            test(
               'With nested create',
               runner(setupKeystone, async ({ keystone }) => {
                 const locationName = sampleOne(alphanumGenerator);
@@ -245,7 +245,7 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
                   data: { allCompanies },
                 } = await graphqlRequest({
                   keystone,
-                  query: `{ allCompanies { id location { id company { id }} } }`,
+                  query: `{ allCompanies { id location { id company { id } } } }`,
                 });
                 expect(
                   allCompanies.filter(({ id }) => id === Company.id)[0].location.company.id

@@ -86,7 +86,6 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
             expect(toStr(canaryStudent.teachers)).toHaveLength(0);
             expect(toStr(teacher1.students)).toHaveLength(0);
             expect(toStr(teacher2.students)).toHaveLength(0);
-
             // Run the query to disconnect the teacher from student
             const { data, errors } = await graphqlRequest({
               keystone,
@@ -105,9 +104,7 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
           }
         `,
             });
-
             expect(errors).toBe(undefined);
-
             let newStudent = data.createStudent;
 
             // Check the link has been broken
@@ -146,7 +143,7 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
             expect(toStr(teacher2.students)).toHaveLength(0);
 
             // Run the query to disconnect the teacher from student
-            const { errors } = await graphqlRequest({
+            const { data, errors } = await graphqlRequest({
               keystone,
               query: `
           mutation {
@@ -289,7 +286,6 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
           compareIds(student2.teachers, [teacher1, teacher2]);
           compareIds(teacher1.students, [student1, student2]);
           compareIds(teacher2.students, [student1, student2]);
-
           // Run the query to disconnect the teacher from student
           const { errors } = await graphqlRequest({
             keystone,
@@ -309,7 +305,6 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
         }
     `,
           });
-
           expect(errors).toBe(undefined);
 
           // Check the link has been broken
