@@ -76,10 +76,13 @@ class KnexAdapter extends BaseKeystoneAdapter {
     if (this.config.dropDatabase && process.env.NODE_ENV !== 'production') {
       console.log('Knex adapter: Dropping database');
       await this.dropDatabase();
+      return this._initSchema();
     } else {
       return [];
     }
+  }
 
+  async _initSchema() {
     const createResult = await pSettle(
       Object.values(this.listAdapters).map(listAdapter => listAdapter.createTable())
     );
