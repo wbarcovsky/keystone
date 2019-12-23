@@ -1,5 +1,11 @@
 # @keystonejs/utils
 
+## 5.1.3
+
+### Patch Changes
+
+- [`38f88b62`](https://github.com/keystonejs/keystone/commit/38f88b62d9592d91b56528d4d9c40e9399440c4a) [#2144](https://github.com/keystonejs/keystone/pull/2144) - Upgraded all @babel/\* dependencies.
+
 ## 5.1.2
 
 ### Patch Changes

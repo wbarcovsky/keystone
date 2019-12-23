@@ -1,5 +1,15 @@
 # @keystonejs/demo-project-meetup
 
+## 5.0.4
+
+### Patch Changes
+
+- [`f0235b7d`](https://github.com/keystonejs/keystone/commit/f0235b7df9d5ee3118c40a056a559d59f186a518) [#2149](https://github.com/keystonejs/keystone/pull/2149) - Updated eslint dependencies.
+- Updated dependencies [[`38f88b62`](https://github.com/keystonejs/keystone/commit/38f88b62d9592d91b56528d4d9c40e9399440c4a)]:
+  - @keystonejs/app-admin-ui@5.5.3
+  - @keystonejs/fields-wysiwyg-tinymce@5.0.4
+  - @keystonejs/fields@6.0.5
+
 ## 5.0.3
 
 ### Patch Changes

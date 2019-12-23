@@ -1,5 +1,33 @@
 # @keystonejs/fields
 
+## 6.0.5
+
+### Patch Changes
+
+- [`38f88b62`](https://github.com/keystonejs/keystone/commit/38f88b62d9592d91b56528d4d9c40e9399440c4a) [#2144](https://github.com/keystonejs/keystone/pull/2144) - Upgraded all @babel/\* dependencies.
+- Updated dependencies [[`38f88b62`](https://github.com/keystonejs/keystone/commit/38f88b62d9592d91b56528d4d9c40e9399440c4a)]:
+  - @arch-ui/button@0.0.13
+  - @arch-ui/controls@0.1.3
+  - @arch-ui/day-picker@0.0.18
+  - @arch-ui/drawer@0.0.15
+  - @arch-ui/fields@2.0.5
+  - @arch-ui/filters@0.0.15
+  - @arch-ui/icons@0.0.8
+  - @arch-ui/input@0.1.4
+  - @arch-ui/layout@0.2.8
+  - @arch-ui/loading@0.0.12
+  - @arch-ui/lozenge@0.0.11
+  - @arch-ui/options@0.0.13
+  - @arch-ui/popout@0.0.13
+  - @arch-ui/select@0.1.3
+  - @arch-ui/theme@0.0.7
+  - @arch-ui/tooltip@0.1.6
+  - @arch-ui/typography@0.0.12
+  - @keystonejs/build-field-types@5.1.4
+  - @keystonejs/field-content@5.2.2
+  - @keystonejs/utils@5.1.3
+  - @arch-ui/alert@0.0.12
+
 ## 6.0.4
 
 ### Patch Changes

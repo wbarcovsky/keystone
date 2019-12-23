@@ -1,5 +1,15 @@
 # @keystonejs/website
 
+## 5.0.4
+
+### Patch Changes
+
+- Updated dependencies [[`38f88b62`](https://github.com/keystonejs/keystone/commit/38f88b62d9592d91b56528d4d9c40e9399440c4a)]:
+  - @arch-ui/icons@0.0.8
+  - @arch-ui/input@0.1.4
+  - @arch-ui/select@0.1.3
+  - @arch-ui/theme@0.0.7
+
 ## 5.0.3
 
 ### Patch Changes
