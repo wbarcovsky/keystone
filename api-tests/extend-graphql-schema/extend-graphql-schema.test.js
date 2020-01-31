@@ -30,14 +30,15 @@ function setupKeystone(adapterName) {
             access: falseFn,
           },
         ],
+        types: [{ type: 'type TripleResult { result: Int }' }],
         mutations: [
           {
-            schema: 'triple(x: Int): Int',
-            resolver: (_, { x }) => 3 * x,
+            schema: 'triple(x: Int): TripleResult',
+            resolver: (_, { x }) => ({ result: 3 * x }),
             access: { testing: true },
           },
         ],
-      });
+    });
     },
   });
 }
@@ -99,7 +100,9 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
             keystone,
             query: `
               mutation {
-                triple(x: 10)
+                triple(x: 10) {
+                  result
+                }
               }
             `,
           });
@@ -108,7 +111,7 @@ multiAdapterRunners().map(({ runner, adapterName }) =>
             throw errors;
           }
 
-          expect(data.triple).toEqual(30);
+          expect(data.triple.result).toEqual(30);
         })
       );
     });

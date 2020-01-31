@@ -301,7 +301,7 @@ exports.ForgottenPasswordToken = {
           expiresAt,
         };
 
-        const { errors } = await query(
+        const { errors, data } = await query(
           `
             mutation createForgottenPasswordToken(
               $userId: ID!,
@@ -333,7 +333,7 @@ exports.ForgottenPasswordToken = {
           return;
         }
 
-        return true;
+        return data;
       },
     },
     {

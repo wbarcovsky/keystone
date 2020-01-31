@@ -18,6 +18,17 @@ const keystone = new Keystone({
   onConnect: initialiseData,
 });
 
+keystone.extendGraphQLSchema({
+  types: [{ type: 'type TripleResult { result: Int }' }],
+  mutations: [
+    {
+      schema: 'triple(x: Int): TripleResult',
+      resolver: (_, { x }) => ({ result: 3 * x }),
+      access: { testing: true },
+    },
+  ],
+});
+
 const authStrategy = keystone.createAuthStrategy({
   type: PasswordAuthStrategy,
   list: 'User',
