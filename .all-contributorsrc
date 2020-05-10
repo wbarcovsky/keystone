@@ -98,7 +98,9 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/15622106?v=4",
       "profile": "https://github.com/Noviny",
       "contributions": [
-        "code"
+        "code",
+        "maintenance",
+        "tool"
       ]
     },
     {
@@ -370,6 +372,34 @@
       "profile": "https://github.com/justintemps",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "gabipetrovay",
+      "name": "Gabriel Petrovay",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1170398?v=4",
+      "profile": "https://github.com/gabipetrovay",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "LiamAttClarke",
+      "name": "Liam Clarke",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/9361948?v=4",
+      "profile": "https://atticus.dev",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "wbarcovsky",
+      "name": "Vladimir Barcovsky",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5498761?v=4",
+      "profile": "https://github.com/wbarcovsky",
+      "contributions": [
+        "code"
       ]
     }
   ],

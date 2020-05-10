@@ -8,7 +8,11 @@ const getArgs = () => {
   }
 
   const argsSpec = {
+    '--name': String,
     '--template': String,
+    '--database': String,
+    '--connection-string': String,
+    '--test-connection': Boolean,
     '--help': Boolean,
     '--dry-run': Boolean,
     '-h': '--help',

@@ -18,64 +18,35 @@ describe('Test main export', () => {
       ],
     };
     const queryTree = queryParser({ listAdapter, getUID: jest.fn(key => key) }, query);
-
-    const aggregateResponse = [
-      {
-        name: 'foobar',
-        age: 23,
-        posts: [1, 3], // the IDs are stored on the field
-        posts_every_posts: [
-          // this is the join result
-          {
-            id: 1,
-            title: 'hello',
-            tags: [4, 5],
-            tags_some_tags: [
-              {
-                id: 4,
-                name: 'foo',
-              },
-              {
-                id: 5,
-                name: 'foo',
-              },
-            ],
-          },
-          {
-            id: 3,
-            title: 'hello',
-            tags: [6],
-            tags_some_tags: [
-              {
-                id: 6,
-                name: 'foo',
-              },
-            ],
-          },
-        ],
-      },
-    ];
     const pipeline = pipelineBuilder(queryTree);
-
-    const aggregate = jest.fn(() => Promise.resolve(aggregateResponse));
-    const result = await aggregate(pipeline);
     expect(pipeline).toMatchObject([
       {
         $lookup: {
           from: 'posts',
           as: 'posts_every_posts',
-          let: { tmpVar: { $ifNull: ['$posts', []] } },
+          let: { tmpVar: `$_id` },
           pipeline: [
-            { $match: { $expr: { $in: ['$_id', '$$tmpVar'] } } },
+            { $match: { $expr: { $eq: [`$author`, '$$tmpVar'] } } },
             {
               $lookup: {
-                from: 'tags',
+                from: 'posts_tags',
                 as: 'tags_some_tags',
-                let: { tmpVar: { $ifNull: ['$tags', []] } },
+                let: { tmpVar: `$_id` },
                 pipeline: [
-                  { $match: { $expr: { $in: ['$_id', '$$tmpVar'] } } },
-                  { $match: { name: { $eq: 'foo' } } },
-                  { $addFields: { id: '$_id' } },
+                  { $match: { $expr: { $eq: [`$Post_id`, '$$tmpVar'] } } },
+                  {
+                    $lookup: {
+                      from: 'tags',
+                      as: 'tags_some_tags_0',
+                      let: { tmpVar: '$Tag_id' },
+                      pipeline: [
+                        { $match: { $expr: { $eq: [`$_id`, '$$tmpVar'] } } },
+                        { $match: { name: { $eq: 'foo' } } },
+                        { $addFields: { id: '$_id' } },
+                      ],
+                    },
+                  },
+                  { $match: { $expr: { $gt: [{ $size: '$tags_some_tags_0' }, 0] } } },
                 ],
               },
             },
@@ -93,28 +64,28 @@ describe('Test main export', () => {
         },
       },
       {
+        $lookup: {
+          from: 'posts',
+          as: 'posts_every_posts_all',
+          let: { tmpVar: '$_id' },
+          pipeline: [{ $match: { $expr: { $eq: [`$author`, '$$tmpVar'] } } }],
+        },
+      },
+      {
         $match: {
           $and: [
             { name: { $eq: 'foobar' } },
             { age: { $eq: 23 } },
             {
               $expr: {
-                $eq: [{ $size: '$posts_every_posts' }, { $size: { $ifNull: ['$posts', []] } }],
+                $eq: [{ $size: '$posts_every_posts' }, { $size: '$posts_every_posts_all' }],
               },
             },
           ],
         },
       },
       { $addFields: { id: '$_id' } },
-      { $project: { posts_every_posts: 0 } },
-    ]);
-
-    expect(result).toMatchObject([
-      {
-        name: 'foobar',
-        age: 23,
-        posts: [1, 3],
-      },
+      { $project: { posts_every_posts: 0, posts_every_posts_all: 0 } },
     ]);
   });
 });

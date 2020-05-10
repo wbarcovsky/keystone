@@ -4,7 +4,7 @@ import { jsx } from '@emotion/core';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { FieldContainer, FieldLabel, FieldInput } from '@arch-ui/fields';
+import { FieldContainer, FieldLabel, FieldDescription, FieldInput } from '@arch-ui/fields';
 import { AlertIcon } from '@arch-ui/icons';
 import { HiddenInput } from '@arch-ui/input';
 import { Lozenge } from '@arch-ui/lozenge';
@@ -224,6 +224,7 @@ export default class FileField extends Component {
     return (
       <FieldContainer>
         <FieldLabel htmlFor={htmlID} field={field} errors={errors} />
+        <FieldDescription text={field.adminDoc} />
         <FieldInput>
           {file ? (
             <Wrapper>
@@ -255,7 +256,7 @@ export default class FileField extends Component {
             autoComplete="off"
             autoFocus={autoFocus}
             id={htmlID}
-            innerRef={this.getInputRef}
+            ref={this.getInputRef}
             name={field.path}
             onChange={this.onChange}
             type="file"

@@ -12,7 +12,7 @@ export default class EditFilterPopout extends Component {
   onSubmit = () => {
     const { filter, onChange } = this.props;
     const { value } = this.state;
-    if (value === null) return;
+    if (value === null || filter.field.getFilterValue(value) === null) return;
     onChange({
       field: filter.field,
       label: filter.label,
@@ -32,7 +32,7 @@ export default class EditFilterPopout extends Component {
   render() {
     const { filter, target } = this.props;
     const { value } = this.state;
-    let [Filter] = filter.field.adminMeta.readViews([filter.field.views.Filter]);
+    let [Filter] = filter.field.readViews([filter.field.views.Filter]);
     const headerTitle = filter.field.getFilterLabel(filter);
 
     return (

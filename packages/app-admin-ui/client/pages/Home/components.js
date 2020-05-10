@@ -1,8 +1,12 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
+import { Fragment } from 'react';
 import styled from '@emotion/styled';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { withPseudoState } from 'react-pseudo-state';
+import { useList } from '../../providers/List';
+
+import CreateItemModal from '../../components/CreateItemModal';
 
 import { PlusIcon } from '@arch-ui/icons';
 import { Card } from '@arch-ui/card';
@@ -29,39 +33,44 @@ const BoxElement = styled(Card)`
   }
 `;
 
-export const BoxComponent = ({
-  focusOrigin,
-  isActive,
-  isHover,
-  isFocus,
-  list,
-  meta,
-  onCreateClick,
-  ...props
-}) => {
+const BoxComponent = ({ focusOrigin, isActive, isHover, isFocus, meta, ...props }) => {
+  const { list, openCreateItemModal } = useList();
+  const history = useHistory();
+
+  const onCreate = ({ data }) => {
+    const id = data[list.gqlNames.createMutationName].id;
+    history.push(`${list.fullPpath}/${id}`);
+  };
+
   const { label, singular } = list;
 
   return (
-    <BoxElement as={Link} isInteractive title={`Go to ${label}`} {...props}>
-      <A11yText>Go to {label}</A11yText>
-      <Name
-        isHover={isHover || isFocus}
-        // this is aria-hidden since the label above shows the label already
-        // so if this wasn't aria-hidden screen readers would read the label twice
-        aria-hidden
-      >
-        {label}
-      </Name>
-      <Count meta={meta} />
-      <CreateButton
-        title={`Create ${singular}`}
-        isHover={isHover || isFocus}
-        onClick={onCreateClick}
-      >
-        <PlusIcon />
-        <A11yText>Create {singular}</A11yText>
-      </CreateButton>
-    </BoxElement>
+    <Fragment>
+      <BoxElement as={Link} isInteractive title={`Go to ${label}`} {...props}>
+        <A11yText>Go to {label}</A11yText>
+        <Name
+          isHover={isHover || isFocus}
+          // this is aria-hidden since the label above shows the label already
+          // so if this wasn't aria-hidden screen readers would read the label twice
+          aria-hidden
+        >
+          {label}
+        </Name>
+        <Count meta={meta} />
+        <CreateButton
+          title={`Create ${singular}`}
+          isHover={isHover || isFocus}
+          onClick={e => {
+            e.preventDefault();
+            openCreateItemModal();
+          }}
+        >
+          <PlusIcon />
+          <A11yText>Create {singular}</A11yText>
+        </CreateButton>
+      </BoxElement>
+      <CreateItemModal onCreate={onCreate} />
+    </Fragment>
   );
 };
 
@@ -80,7 +89,7 @@ export const Name = styled.span(
   text-overflow: ellipsis;
   transition: border-color 80ms linear;
   white-space: nowrap;
-  padding-right: 2em;
+  margin-right: 2em;
 `
 );
 export const Count = ({ meta }) => {

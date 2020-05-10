@@ -21,7 +21,7 @@ const Embed = ({ url, oembedData }) => {
 
   if (options.previewComponent) {
     // The adapter should implement this option
-    const [Preview] = options.adminMeta.readViews([options.previewComponent]);
+    const [Preview] = options.readViews([options.previewComponent]);
     return <Preview url={url} options={options} />;
   } else {
     // This is a fallback so we can at least try to render _something_
@@ -101,7 +101,7 @@ export function Sidebar({ editor }) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 384 512"
     >
-      <path d="M320,32a32,32,0,0,0-64,0v96h64Zm48,128H16A16,16,0,0,0,0,176v32a16,16,0,0,0,16,16H32v32A160.07,160.07,0,0,0,160,412.8V512h64V412.8A160.07,160.07,0,0,0,352,256V224h16a16,16,0,0,0,16-16V176A16,16,0,0,0,368,160ZM128,32a32,32,0,0,0-64,0v96h64Z"></path>
+      <path d="M320,32a32,32,0,0,0-64,0v96h64Zm48,128H16A16,16,0,0,0,0,176v32a16,16,0,0,0,16,16H32v32A160.07,160.07,0,0,0,160,412.8V512h64V412.8A160.07,160.07,0,0,0,352,256V224h16a16,16,0,0,0,16-16V176A16,16,0,0,0,368,160ZM128,32a32,32,0,0,0-64,0v96h64Z" />
     </svg>
   );
   return (
@@ -154,7 +154,7 @@ export function serialize({ node }) {
     mutations,
     node: {
       ...node.toJSON(),
-      // Zero out the data so we don't unnecesarily duplicate the url
+      // Zero out the data so we don't unnecessarily duplicate the url
       data: {},
     },
   };

@@ -74,15 +74,7 @@ describe('query parser', () => {
     test('builds a query tree with to-many relationship and other postjoin filters', () => {
       const queryTree = queryParser(
         { listAdapter, getUID: jest.fn(key => key) },
-        {
-          name: 'foobar',
-          age: 23,
-          $first: 1,
-          posts: {
-            title: 'hello',
-            $orderBy: 'title_ASC',
-          },
-        }
+        { name: 'foobar', age: 23, $first: 1, posts: { title: 'hello', $sortBy: ['title_ASC'] } }
       );
 
       expect(queryTree).toMatchObject({
@@ -91,9 +83,11 @@ describe('query parser', () => {
             matchTerm: { title: { $eq: 'hello' } },
             relationshipInfo: {
               from: 'posts',
-              field: 'posts',
-              many: true,
               uniqueField: 'posts_posts',
+              thisTable: 'User',
+              rel: {},
+              filterType: 'only',
+              farCollection: 'posts',
             },
             postJoinPipeline: [{ $sort: { title: 1 } }],
             relationships: [],
@@ -113,11 +107,7 @@ describe('query parser', () => {
     test('builds a query tree with to-many relationship', () => {
       const queryTree = queryParser(
         { listAdapter, getUID: jest.fn(key => key) },
-        {
-          name: 'foobar',
-          age: 23,
-          posts: { title: 'hello' },
-        }
+        { name: 'foobar', age: 23, posts: { title: 'hello' } }
       );
 
       expect(queryTree).toMatchObject({
@@ -126,9 +116,11 @@ describe('query parser', () => {
             matchTerm: { title: { $eq: 'hello' } },
             relationshipInfo: {
               from: 'posts',
-              field: 'posts',
-              many: true,
               uniqueField: 'posts_posts',
+              thisTable: 'User',
+              rel: {},
+              filterType: 'only',
+              farCollection: 'posts',
             },
             postJoinPipeline: [],
             relationships: [],
@@ -147,11 +139,7 @@ describe('query parser', () => {
     test('builds a query tree for a relationship with no filters', () => {
       const queryTree = queryParser(
         { listAdapter, getUID: jest.fn(key => key) },
-        {
-          name: 'foobar',
-          age: 23,
-          posts: {},
-        }
+        { name: 'foobar', age: 23, posts: {} }
       );
 
       expect(queryTree).toMatchObject({
@@ -160,9 +148,11 @@ describe('query parser', () => {
             matchTerm: undefined,
             relationshipInfo: {
               from: 'posts',
-              field: 'posts',
-              many: true,
               uniqueField: 'posts_posts',
+              thisTable: 'User',
+              rel: {},
+              filterType: 'only',
+              farCollection: 'posts',
             },
             postJoinPipeline: [],
             relationships: [],
@@ -181,11 +171,7 @@ describe('query parser', () => {
     test('builds a query tree with to-single relationship', () => {
       const queryTree = queryParser(
         { listAdapter, getUID: jest.fn(key => key) },
-        {
-          name: 'foobar',
-          age: 23,
-          company: { name: 'hello' },
-        }
+        { name: 'foobar', age: 23, company: { name: 'hello' } }
       );
 
       expect(queryTree).toMatchObject({
@@ -194,9 +180,11 @@ describe('query parser', () => {
             matchTerm: { name: { $eq: 'hello' } },
             relationshipInfo: {
               from: 'company-collection',
-              field: 'company',
-              many: false,
               uniqueField: 'company_company',
+              thisTable: 'User',
+              rel: {},
+              filterType: 'only',
+              farCollection: 'company-collection',
             },
             postJoinPipeline: [],
             relationships: [],
@@ -220,10 +208,7 @@ describe('query parser', () => {
           age: 23,
           posts_every: {
             title: 'hello',
-            tags_some: {
-              name: 'React',
-              posts_every: { title: 'foo' },
-            },
+            tags_some: { name: 'React', posts_every: { title: 'foo' } },
           },
         }
       );
@@ -239,9 +224,11 @@ describe('query parser', () => {
             },
             relationshipInfo: {
               from: 'posts',
-              field: 'posts',
-              many: true,
               uniqueField: 'posts_every_posts',
+              thisTable: 'User',
+              rel: {},
+              filterType: 'every',
+              farCollection: 'posts',
             },
             postJoinPipeline: [],
             relationships: [
@@ -251,29 +238,30 @@ describe('query parser', () => {
                     { name: { $eq: 'React' } },
                     {
                       $expr: {
-                        $eq: [
-                          { $size: '$posts_every_posts' },
-                          { $size: { $ifNull: ['$posts', []] } },
-                        ],
+                        $eq: [{ $size: '$posts_every_posts' }, { $size: '$posts_every_posts_all' }],
                       },
                     },
                   ],
                 },
                 relationshipInfo: {
-                  from: 'tags',
-                  field: 'tags',
-                  many: true,
+                  from: 'posts_tags',
                   uniqueField: 'tags_some_tags',
+                  thisTable: 'Post',
+                  rel: {},
+                  filterType: 'some',
+                  farCollection: 'tags',
                 },
                 postJoinPipeline: [],
                 relationships: [
                   {
                     matchTerm: { title: { $eq: 'foo' } },
                     relationshipInfo: {
-                      from: 'posts',
-                      field: 'posts',
-                      many: true,
+                      from: 'posts_tags',
                       uniqueField: 'posts_every_posts',
+                      thisTable: 'Tag',
+                      rel: {},
+                      filterType: 'every',
+                      farCollection: 'posts',
                     },
                     postJoinPipeline: [],
                     relationships: [],
@@ -289,7 +277,7 @@ describe('query parser', () => {
             { age: { $eq: 23 } },
             {
               $expr: {
-                $eq: [{ $size: '$posts_every_posts' }, { $size: { $ifNull: ['$posts', []] } }],
+                $eq: [{ $size: '$posts_every_posts' }, { $size: '$posts_every_posts_all' }],
               },
             },
           ],
@@ -319,20 +307,24 @@ describe('query parser', () => {
               ],
             },
             relationshipInfo: {
-              field: 'posts',
               from: 'posts',
-              many: true,
               uniqueField: 'posts_every_posts',
+              thisTable: 'User',
+              rel: {},
+              filterType: 'every',
+              farCollection: 'posts',
             },
             postJoinPipeline: [],
             relationships: [
               {
                 matchTerm: { name: { $eq: 'foo' } },
                 relationshipInfo: {
-                  field: 'tags',
-                  from: 'tags',
-                  many: true,
+                  from: 'posts_tags',
                   uniqueField: 'tags_some_tags',
+                  thisTable: 'Post',
+                  rel: {},
+                  filterType: 'some',
+                  farCollection: 'tags',
                 },
                 postJoinPipeline: [],
                 relationships: [],
@@ -346,7 +338,7 @@ describe('query parser', () => {
             { age: { $eq: 23 } },
             {
               $expr: {
-                $eq: [{ $size: '$posts_every_posts' }, { $size: { $ifNull: ['$posts', []] } }],
+                $eq: [{ $size: '$posts_every_posts' }, { $size: '$posts_every_posts_all' }],
               },
             },
           ],
@@ -376,20 +368,24 @@ describe('query parser', () => {
               ],
             },
             relationshipInfo: {
-              field: 'posts',
               from: 'posts',
-              many: true,
               uniqueField: 'posts_every_posts',
+              thisTable: 'User',
+              rel: {},
+              filterType: 'every',
+              farCollection: 'posts',
             },
             postJoinPipeline: [],
             relationships: [
               {
                 matchTerm: { name: { $eq: 'foo' } },
                 relationshipInfo: {
-                  field: 'tags',
-                  from: 'tags',
-                  many: true,
+                  from: 'posts_tags',
                   uniqueField: 'tags_some_tags',
+                  thisTable: 'Post',
+                  rel: {},
+                  filterType: 'some',
+                  farCollection: 'tags',
                 },
                 postJoinPipeline: [],
                 relationships: [],
@@ -403,7 +399,7 @@ describe('query parser', () => {
             { age: { $eq: 23 } },
             {
               $expr: {
-                $eq: [{ $size: '$posts_every_posts' }, { $size: { $ifNull: ['$posts', []] } }],
+                $eq: [{ $size: '$posts_every_posts' }, { $size: '$posts_every_posts_all' }],
               },
             },
           ],
@@ -433,20 +429,24 @@ describe('query parser', () => {
               ],
             },
             relationshipInfo: {
-              field: 'posts',
               from: 'posts',
-              many: true,
               uniqueField: 'posts_every_posts',
+              thisTable: 'User',
+              rel: {},
+              filterType: 'every',
+              farCollection: 'posts',
             },
             postJoinPipeline: [],
             relationships: [
               {
                 matchTerm: { name: { $eq: 'foo' } },
                 relationshipInfo: {
-                  field: 'tags',
-                  from: 'tags',
-                  many: true,
+                  from: 'posts_tags',
                   uniqueField: 'tags_some_tags',
+                  thisTable: 'Post',
+                  rel: {},
+                  filterType: 'some',
+                  farCollection: 'tags',
                 },
                 postJoinPipeline: [],
                 relationships: [],
@@ -460,7 +460,7 @@ describe('query parser', () => {
             { age: { $eq: 23 } },
             {
               $expr: {
-                $eq: [{ $size: '$posts_every_posts' }, { $size: { $ifNull: ['$posts', []] } }],
+                $eq: [{ $size: '$posts_every_posts' }, { $size: '$posts_every_posts_all' }],
               },
             },
           ],
@@ -490,20 +490,24 @@ describe('query parser', () => {
               ],
             },
             relationshipInfo: {
-              field: 'posts',
               from: 'posts',
-              many: true,
               uniqueField: 'posts_every_posts',
+              thisTable: 'User',
+              rel: {},
+              filterType: 'every',
+              farCollection: 'posts',
             },
             postJoinPipeline: [],
             relationships: [
               {
                 matchTerm: { name: { $eq: 'foo' } },
                 relationshipInfo: {
-                  field: 'tags',
-                  from: 'tags',
-                  many: true,
+                  from: 'posts_tags',
                   uniqueField: 'tags_some_tags',
+                  thisTable: 'Post',
+                  rel: {},
+                  filterType: 'some',
+                  farCollection: 'tags',
                 },
                 postJoinPipeline: [],
                 relationships: [],
@@ -517,7 +521,7 @@ describe('query parser', () => {
             { age: { $eq: 23 } },
             {
               $expr: {
-                $eq: [{ $size: '$posts_every_posts' }, { $size: { $ifNull: ['$posts', []] } }],
+                $eq: [{ $size: '$posts_every_posts' }, { $size: '$posts_every_posts_all' }],
               },
             },
           ],
